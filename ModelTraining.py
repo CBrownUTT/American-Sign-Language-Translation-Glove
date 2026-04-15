@@ -14,17 +14,22 @@ from sklearn.metrics import (
     precision_recall_fscore_support
 )
 
-RAW_CSV_FILE = "glove_sequence_data.csv"
+RAW_CSV_FILE = "glove_sequence_data_total.csv"
 OUTPUT_DIR = "training_outputs"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+# Must match the Arduino .ino header exactly
 FEATURE_COLUMNS = [
     "hall_thumb", "hall_index", "hall_middle", "hall_ring", "hall_pinky",
     "imu_ax", "imu_ay", "imu_az",
     "imu_gx", "imu_gy", "imu_gz",
-    "imu_mx", "imu_my", "imu_mz",
+    "imu_ex", "imu_ey", "imu_ez",
     "contact_p", "contact_i", "contact_m", "contact_um"
 ]
+
+
+# Put dynamic-sign labels here. Everything else is treated as static.
+DYNAMIC_LABELS = {"J", "Z"}
 
 
 def safe_interp(arr, positions):
@@ -79,10 +84,10 @@ def sequence_to_features(seq_df):
         seq_df["imu_gy"].to_numpy(dtype=float) ** 2 +
         seq_df["imu_gz"].to_numpy(dtype=float) ** 2
     )
-    mag_mag = np.sqrt(
-        seq_df["imu_mx"].to_numpy(dtype=float) ** 2 +
-        seq_df["imu_my"].to_numpy(dtype=float) ** 2 +
-        seq_df["imu_mz"].to_numpy(dtype=float) ** 2
+    euler_mag = np.sqrt(
+        seq_df["imu_ex"].to_numpy(dtype=float) ** 2 +
+        seq_df["imu_ey"].to_numpy(dtype=float) ** 2 +
+        seq_df["imu_ez"].to_numpy(dtype=float) ** 2
     )
 
     feat["accel_mag_mean"] = np.mean(accel_mag)
@@ -95,10 +100,10 @@ def sequence_to_features(seq_df):
     feat["gyro_mag_std"] = np.std(gyro_mag)
     feat["gyro_mag_abs_change_sum"] = np.sum(np.abs(np.diff(gyro_mag)))
 
-    feat["mag_mag_mean"] = np.mean(mag_mag)
-    feat["mag_mag_max"] = np.max(mag_mag)
-    feat["mag_mag_std"] = np.std(mag_mag)
-    feat["mag_mag_abs_change_sum"] = np.sum(np.abs(np.diff(mag_mag)))
+    feat["euler_mag_mean"] = np.mean(euler_mag)
+    feat["euler_mag_max"] = np.max(euler_mag)
+    feat["euler_mag_std"] = np.std(euler_mag)
+    feat["euler_mag_abs_change_sum"] = np.sum(np.abs(np.diff(euler_mag)))
 
     return feat
 
@@ -118,25 +123,63 @@ def build_sequence_feature_table(raw_df):
     return pd.DataFrame(rows)
 
 
-def split_three_test_per_class(feature_df, random_state=42):
+def split_balanced_static_dynamic(feature_df, dynamic_labels=None, test_fraction=0.20, random_state=42):
+    if feature_df.empty:
+        raise ValueError("feature_df is empty.")
+
+    if dynamic_labels is None:
+        dynamic_labels = set()
+    dynamic_labels = {str(x).upper() for x in dynamic_labels}
+
+    sequence_meta = feature_df[["sequence_id", "label"]].drop_duplicates().copy()
+
+    duplicate_seq = sequence_meta["sequence_id"].duplicated().any()
+    if duplicate_seq:
+        raise ValueError("A sequence_id appears with more than one label.")
+
+    sequence_meta["group_type"] = sequence_meta["label"].apply(
+        lambda x: "dynamic" if str(x).upper() in dynamic_labels else "static"
+    )
+
     train_parts = []
     test_parts = []
 
-    for label, group in feature_df.groupby("label"):
-        group = group.sample(frac=1, random_state=random_state).reset_index(drop=True)
-        n = len(group)
+    for group_type, group_df in sequence_meta.groupby("group_type"):
+        label_counts = group_df["label"].value_counts().sort_index()
+        if label_counts.empty:
+            continue
 
-        if n < 4:
+        min_count = int(label_counts.min())
+        if min_count < 2:
             raise ValueError(
-                f"Label '{label}' has only {n} sequences. "
-                f"Need at least 4 sequences per sign to place 3 in test and keep at least 1 in train."
+                f"{group_type.title()} labels need at least 2 sequences each for a train/test split. "
+                f"Smallest class has {min_count}."
             )
 
-        test_group = group.iloc[:3]
-        train_group = group.iloc[3:]
+        per_label_test = max(1, int(round(min_count * test_fraction)))
+        per_label_test = min(per_label_test, min_count - 1)
 
-        test_parts.append(test_group)
-        train_parts.append(train_group)
+        for label, label_group in group_df.groupby("label"):
+            label_group = label_group.sample(frac=1, random_state=random_state).reset_index(drop=True)
+
+            test_seq_ids = set(label_group.iloc[:per_label_test]["sequence_id"])
+            train_seq_ids = set(label_group.iloc[per_label_test:]["sequence_id"])
+
+            label_feature_rows = feature_df[feature_df["sequence_id"].isin(set(label_group["sequence_id"]))].copy()
+
+            test_rows = label_feature_rows[label_feature_rows["sequence_id"].isin(test_seq_ids)].copy()
+            train_rows = label_feature_rows[label_feature_rows["sequence_id"].isin(train_seq_ids)].copy()
+
+            if test_rows.empty or train_rows.empty:
+                raise ValueError(
+                    f"Split failed for label '{label}' in {group_type} group."
+                )
+
+            test_parts.append(test_rows)
+            train_parts.append(train_rows)
+
+    if not train_parts or not test_parts:
+        raise ValueError("Split failed and produced no train/test partitions.")
 
     train_df = pd.concat(train_parts, ignore_index=True)
     test_df = pd.concat(test_parts, ignore_index=True)
@@ -213,6 +256,34 @@ def print_split_summary(train_df, test_df):
 
     print("\nTest sequences per class:")
     print(test_df["label"].value_counts().sort_index().to_string())
+
+
+def print_group_split_summary(train_df, test_df, dynamic_labels=None):
+    if dynamic_labels is None:
+        dynamic_labels = set()
+    dynamic_labels = {str(x).upper() for x in dynamic_labels}
+
+    train_seq = train_df[["sequence_id", "label"]].drop_duplicates().copy()
+    test_seq = test_df[["sequence_id", "label"]].drop_duplicates().copy()
+
+    train_seq["group_type"] = train_seq["label"].apply(
+        lambda x: "dynamic" if str(x).upper() in dynamic_labels else "static"
+    )
+    test_seq["group_type"] = test_seq["label"].apply(
+        lambda x: "dynamic" if str(x).upper() in dynamic_labels else "static"
+    )
+
+    print("\nTrain sequences per class:")
+    print(train_seq["label"].value_counts().sort_index().to_string())
+
+    print("\nTest sequences per class:")
+    print(test_seq["label"].value_counts().sort_index().to_string())
+
+    print("\nTrain sequences per group:")
+    print(train_seq["group_type"].value_counts().sort_index().to_string())
+
+    print("\nTest sequences per group:")
+    print(test_seq["group_type"].value_counts().sort_index().to_string())
 
 
 def evaluate_model(name, model, X_train, y_train, X_test, y_test, class_labels):
@@ -350,12 +421,14 @@ def main():
     print("\nTotal sequences per class:")
     print(feature_df["label"].value_counts().sort_index().to_string())
 
-    train_df, test_df = split_three_test_per_class(
+    train_df, test_df = split_balanced_static_dynamic(
         feature_df,
+        dynamic_labels=DYNAMIC_LABELS,
+        test_fraction=0.20,
         random_state=42
     )
 
-    print_split_summary(train_df, test_df)
+    print_group_split_summary(train_df, test_df, dynamic_labels=DYNAMIC_LABELS)
 
     X_train = train_df.drop(columns=["sequence_id", "label"])
     y_train = train_df["label"]
