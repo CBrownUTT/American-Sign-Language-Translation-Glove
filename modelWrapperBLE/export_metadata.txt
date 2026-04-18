@@ -1,0 +1,351 @@
+Export summary
+==============
+Estimator type: RandomForestClassifier
+Number of trees: 300
+Number of features: 284
+Number of raw sensors: 18
+Number of classes: 36
+
+Sensor column order used for feature building:
+ 0: hall_thumb
+ 1: hall_index
+ 2: hall_middle
+ 3: hall_ring
+ 4: hall_pinky
+ 5: imu_ax
+ 6: imu_ay
+ 7: imu_az
+ 8: imu_gx
+ 9: imu_gy
+10: imu_gz
+11: imu_ex
+12: imu_ey
+13: imu_ez
+14: contact_p
+15: contact_i
+16: contact_m
+17: contact_um
+
+Class labels:
+ 0: 1
+ 1: 10
+ 2: 2
+ 3: 3
+ 4: 4
+ 5: 5
+ 6: 6
+ 7: 7
+ 8: 8
+ 9: 9
+10: A
+11: B
+12: C
+13: D
+14: E
+15: F
+16: G
+17: H
+18: I
+19: J
+20: K
+21: L
+22: M
+23: N
+24: O
+25: P
+26: Q
+27: R
+28: S
+29: T
+30: U
+31: V
+32: W
+33: X
+34: Y
+35: Z
+
+Feature columns:
+  0: duration_s
+  1: num_frames
+  2: hall_thumb_first
+  3: hall_thumb_last
+  4: hall_thumb_mean
+  5: hall_thumb_min
+  6: hall_thumb_max
+  7: hall_thumb_std
+  8: hall_thumb_range
+  9: hall_thumb_delta
+ 10: hall_thumb_abs_change_sum
+ 11: hall_thumb_slope
+ 12: hall_thumb_p0
+ 13: hall_thumb_p25
+ 14: hall_thumb_p50
+ 15: hall_thumb_p75
+ 16: hall_thumb_p100
+ 17: hall_index_first
+ 18: hall_index_last
+ 19: hall_index_mean
+ 20: hall_index_min
+ 21: hall_index_max
+ 22: hall_index_std
+ 23: hall_index_range
+ 24: hall_index_delta
+ 25: hall_index_abs_change_sum
+ 26: hall_index_slope
+ 27: hall_index_p0
+ 28: hall_index_p25
+ 29: hall_index_p50
+ 30: hall_index_p75
+ 31: hall_index_p100
+ 32: hall_middle_first
+ 33: hall_middle_last
+ 34: hall_middle_mean
+ 35: hall_middle_min
+ 36: hall_middle_max
+ 37: hall_middle_std
+ 38: hall_middle_range
+ 39: hall_middle_delta
+ 40: hall_middle_abs_change_sum
+ 41: hall_middle_slope
+ 42: hall_middle_p0
+ 43: hall_middle_p25
+ 44: hall_middle_p50
+ 45: hall_middle_p75
+ 46: hall_middle_p100
+ 47: hall_ring_first
+ 48: hall_ring_last
+ 49: hall_ring_mean
+ 50: hall_ring_min
+ 51: hall_ring_max
+ 52: hall_ring_std
+ 53: hall_ring_range
+ 54: hall_ring_delta
+ 55: hall_ring_abs_change_sum
+ 56: hall_ring_slope
+ 57: hall_ring_p0
+ 58: hall_ring_p25
+ 59: hall_ring_p50
+ 60: hall_ring_p75
+ 61: hall_ring_p100
+ 62: hall_pinky_first
+ 63: hall_pinky_last
+ 64: hall_pinky_mean
+ 65: hall_pinky_min
+ 66: hall_pinky_max
+ 67: hall_pinky_std
+ 68: hall_pinky_range
+ 69: hall_pinky_delta
+ 70: hall_pinky_abs_change_sum
+ 71: hall_pinky_slope
+ 72: hall_pinky_p0
+ 73: hall_pinky_p25
+ 74: hall_pinky_p50
+ 75: hall_pinky_p75
+ 76: hall_pinky_p100
+ 77: imu_ax_first
+ 78: imu_ax_last
+ 79: imu_ax_mean
+ 80: imu_ax_min
+ 81: imu_ax_max
+ 82: imu_ax_std
+ 83: imu_ax_range
+ 84: imu_ax_delta
+ 85: imu_ax_abs_change_sum
+ 86: imu_ax_slope
+ 87: imu_ax_p0
+ 88: imu_ax_p25
+ 89: imu_ax_p50
+ 90: imu_ax_p75
+ 91: imu_ax_p100
+ 92: imu_ay_first
+ 93: imu_ay_last
+ 94: imu_ay_mean
+ 95: imu_ay_min
+ 96: imu_ay_max
+ 97: imu_ay_std
+ 98: imu_ay_range
+ 99: imu_ay_delta
+100: imu_ay_abs_change_sum
+101: imu_ay_slope
+102: imu_ay_p0
+103: imu_ay_p25
+104: imu_ay_p50
+105: imu_ay_p75
+106: imu_ay_p100
+107: imu_az_first
+108: imu_az_last
+109: imu_az_mean
+110: imu_az_min
+111: imu_az_max
+112: imu_az_std
+113: imu_az_range
+114: imu_az_delta
+115: imu_az_abs_change_sum
+116: imu_az_slope
+117: imu_az_p0
+118: imu_az_p25
+119: imu_az_p50
+120: imu_az_p75
+121: imu_az_p100
+122: imu_gx_first
+123: imu_gx_last
+124: imu_gx_mean
+125: imu_gx_min
+126: imu_gx_max
+127: imu_gx_std
+128: imu_gx_range
+129: imu_gx_delta
+130: imu_gx_abs_change_sum
+131: imu_gx_slope
+132: imu_gx_p0
+133: imu_gx_p25
+134: imu_gx_p50
+135: imu_gx_p75
+136: imu_gx_p100
+137: imu_gy_first
+138: imu_gy_last
+139: imu_gy_mean
+140: imu_gy_min
+141: imu_gy_max
+142: imu_gy_std
+143: imu_gy_range
+144: imu_gy_delta
+145: imu_gy_abs_change_sum
+146: imu_gy_slope
+147: imu_gy_p0
+148: imu_gy_p25
+149: imu_gy_p50
+150: imu_gy_p75
+151: imu_gy_p100
+152: imu_gz_first
+153: imu_gz_last
+154: imu_gz_mean
+155: imu_gz_min
+156: imu_gz_max
+157: imu_gz_std
+158: imu_gz_range
+159: imu_gz_delta
+160: imu_gz_abs_change_sum
+161: imu_gz_slope
+162: imu_gz_p0
+163: imu_gz_p25
+164: imu_gz_p50
+165: imu_gz_p75
+166: imu_gz_p100
+167: imu_ex_first
+168: imu_ex_last
+169: imu_ex_mean
+170: imu_ex_min
+171: imu_ex_max
+172: imu_ex_std
+173: imu_ex_range
+174: imu_ex_delta
+175: imu_ex_abs_change_sum
+176: imu_ex_slope
+177: imu_ex_p0
+178: imu_ex_p25
+179: imu_ex_p50
+180: imu_ex_p75
+181: imu_ex_p100
+182: imu_ey_first
+183: imu_ey_last
+184: imu_ey_mean
+185: imu_ey_min
+186: imu_ey_max
+187: imu_ey_std
+188: imu_ey_range
+189: imu_ey_delta
+190: imu_ey_abs_change_sum
+191: imu_ey_slope
+192: imu_ey_p0
+193: imu_ey_p25
+194: imu_ey_p50
+195: imu_ey_p75
+196: imu_ey_p100
+197: imu_ez_first
+198: imu_ez_last
+199: imu_ez_mean
+200: imu_ez_min
+201: imu_ez_max
+202: imu_ez_std
+203: imu_ez_range
+204: imu_ez_delta
+205: imu_ez_abs_change_sum
+206: imu_ez_slope
+207: imu_ez_p0
+208: imu_ez_p25
+209: imu_ez_p50
+210: imu_ez_p75
+211: imu_ez_p100
+212: contact_p_first
+213: contact_p_last
+214: contact_p_mean
+215: contact_p_min
+216: contact_p_max
+217: contact_p_std
+218: contact_p_range
+219: contact_p_delta
+220: contact_p_abs_change_sum
+221: contact_p_slope
+222: contact_p_p0
+223: contact_p_p25
+224: contact_p_p50
+225: contact_p_p75
+226: contact_p_p100
+227: contact_i_first
+228: contact_i_last
+229: contact_i_mean
+230: contact_i_min
+231: contact_i_max
+232: contact_i_std
+233: contact_i_range
+234: contact_i_delta
+235: contact_i_abs_change_sum
+236: contact_i_slope
+237: contact_i_p0
+238: contact_i_p25
+239: contact_i_p50
+240: contact_i_p75
+241: contact_i_p100
+242: contact_m_first
+243: contact_m_last
+244: contact_m_mean
+245: contact_m_min
+246: contact_m_max
+247: contact_m_std
+248: contact_m_range
+249: contact_m_delta
+250: contact_m_abs_change_sum
+251: contact_m_slope
+252: contact_m_p0
+253: contact_m_p25
+254: contact_m_p50
+255: contact_m_p75
+256: contact_m_p100
+257: contact_um_first
+258: contact_um_last
+259: contact_um_mean
+260: contact_um_min
+261: contact_um_max
+262: contact_um_std
+263: contact_um_range
+264: contact_um_delta
+265: contact_um_abs_change_sum
+266: contact_um_slope
+267: contact_um_p0
+268: contact_um_p25
+269: contact_um_p50
+270: contact_um_p75
+271: contact_um_p100
+272: accel_mag_mean
+273: accel_mag_max
+274: accel_mag_std
+275: accel_mag_abs_change_sum
+276: gyro_mag_mean
+277: gyro_mag_max
+278: gyro_mag_std
+279: gyro_mag_abs_change_sum
+280: euler_mag_mean
+281: euler_mag_max
+282: euler_mag_std
+283: euler_mag_abs_change_sum
